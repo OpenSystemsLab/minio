@@ -7,7 +7,10 @@ cd "$(dirname "$0")/.."
 TAG=$(git describe --tags --abbrev=0)                  # RELEASE.2025-10-15T17-29-55Z
 VERSION=$(echo "$TAG" | sed -E 's/^RELEASE\.([0-9-]+)T([0-9]+)-([0-9]+)-([0-9]+)Z$/\1T\2:\3:\4Z/')
 GOIMG=golang:1.24.8-alpine                               # go.mod: toolchain go1.24.8
-IMAGE=ghcr.io/opensystemslab/minio:${TAG}-osl${OSL_REV:-1}
+# Org convention: vX.Y.Z (every Flux ImagePolicy filters ^v(\d+\.\d+\.\d+)$).
+# osl/VERSION is OUR version; bump it per rebuild. The upstream release is in
+# the image labels, not the tag.
+IMAGE=ghcr.io/opensystemslab/minio:v$(cat osl/VERSION)
 
 # Cross-compile natively (no emulation): CGO off, same tags/flags as upstream's Makefile.
 docker run --rm -v "$PWD":/src -w /src -e CGO_ENABLED=0 -e GOOS=linux -e GOARCH=amd64 \
@@ -16,6 +19,6 @@ docker run --rm -v "$PWD":/src -w /src -e CGO_ENABLED=0 -e GOOS=linux -e GOARCH=
     git config --global --add safe.directory /src &&
     go build -tags kqueue -trimpath -ldflags \"\$(go run buildscripts/gen-ldflags.go $VERSION)\" -o osl/minio ."
 file osl/minio 2>/dev/null || true
-docker buildx build --platform linux/amd64 -t "$IMAGE" --load osl
+docker buildx build --platform linux/amd64 -t "$IMAGE" --build-arg OSL_VERSION="$(cat osl/VERSION)" --build-arg UPSTREAM="$TAG" --load osl
 [ "${1:-}" = "--push" ] && docker push "$IMAGE"
 echo "built $IMAGE"

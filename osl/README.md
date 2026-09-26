@@ -14,10 +14,19 @@ Branch `osl/RELEASE.2025-10-15T17-29-55Z` = upstream's **final** release tag plu
 ## Build
 ```bash
 osl/build.sh           # cross-compiles linux/amd64 in golang:1.24.8-alpine, packages osl/Dockerfile
-osl/build.sh --push    # also pushes ghcr.io/opensystemslab/minio:<tag>-osl<rev>
+osl/build.sh --push    # also pushes ghcr.io/opensystemslab/minio:v<osl/VERSION>
 ```
 Same flags as upstream's Makefile (`CGO_ENABLED=0 -tags kqueue -trimpath`, ldflags from
-`buildscripts/gen-ldflags.go`, `MINIO_RELEASE=RELEASE`). `OSL_REV` bumps the image suffix.
+`buildscripts/gen-ldflags.go`, `MINIO_RELEASE=RELEASE`).
+
+## Versioning
+Image tags follow the org convention **`vX.Y.Z`** (every Flux `ImagePolicy` filters
+`^v(\d+\.\d+\.\d+)$`), from `osl/VERSION`. Bump the patch for a rebuild, the minor if
+the source ever changes. The upstream release is recorded in the image labels.
+
+| Tag | Upstream | Notes |
+|---|---|---|
+| `v1.0.0` | `RELEASE.2025-10-15T17-29-55Z` | first build. Same digest as the interim tag `RELEASE.2025-10-15T17-29-55Z-osl1` (`sha256:52813653…`), which is superseded |
 
 ## Verified 2026-09-26
 - `minio --version` → `RELEASE.2025-10-15T17-29-55Z (commit-id=9e49d5e7a648…)`, go1.24.8 linux/amd64

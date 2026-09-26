@@ -8,6 +8,8 @@
 # The binary is cross-compiled by osl/build.sh (not in this Dockerfile) because
 # the version stamp needs the git checkout. This file only packages it.
 FROM alpine:3.21
+ARG OSL_VERSION
+ARG UPSTREAM
 RUN apk add --no-cache ca-certificates curl
 COPY minio /usr/bin/minio
 EXPOSE 9000 9001
@@ -15,4 +17,5 @@ ENTRYPOINT ["/usr/bin/minio"]
 CMD ["server", "/data", "--console-address", ":9001"]
 LABEL org.opencontainers.image.source="https://github.com/OpenSystemsLab/minio" \
       org.opencontainers.image.licenses="AGPL-3.0-or-later" \
-      org.opencontainers.image.description="MinIO RELEASE.2025-10-15T17-29-55Z built from source by OpenSystemsLab (upstream archived)"
+      org.opencontainers.image.version="v${OSL_VERSION}" \
+      org.opencontainers.image.description="MinIO ${UPSTREAM} built from source by OpenSystemsLab (upstream archived)"
