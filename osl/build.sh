@@ -4,7 +4,7 @@
 #   osl/build.sh --push     build and push
 set -euo pipefail
 cd "$(dirname "$0")/.."
-TAG=$(git describe --tags --abbrev=0)                  # RELEASE.2025-10-15T17-29-55Z
+TAG=$(git describe --tags --abbrev=0 --match 'RELEASE.*')  # upstream tag, not our vX.Y.Z
 VERSION=$(echo "$TAG" | sed -E 's/^RELEASE\.([0-9-]+)T([0-9]+)-([0-9]+)-([0-9]+)Z$/\1T\2:\3:\4Z/')
 GOIMG=golang:1.24.8-alpine                               # go.mod: toolchain go1.24.8
 # Org convention: vX.Y.Z (every Flux ImagePolicy filters ^v(\d+\.\d+\.\d+)$).
