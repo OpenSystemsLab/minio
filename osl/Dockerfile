@@ -5,13 +5,15 @@
 # dl.min.io binaries return 410. Our S3 data (open-webui-gitops#306) is stored
 # in MinIO's on-disk format, which only a MinIO server can read.
 #
-# The binary is cross-compiled by osl/build.sh (not in this Dockerfile) because
+# The binaries are cross-compiled by osl/build.sh (not in this Dockerfile) because
 # the version stamp needs the git checkout. This file only packages it.
 FROM alpine:3.21
 ARG OSL_VERSION
 ARG UPSTREAM
+# Set by BuildKit from --platform; osl/build.sh writes one binary per architecture.
+ARG TARGETARCH
 RUN apk add --no-cache ca-certificates curl
-COPY minio /usr/bin/minio
+COPY minio-${TARGETARCH} /usr/bin/minio
 EXPOSE 9000 9001
 ENTRYPOINT ["/usr/bin/minio"]
 CMD ["server", "/data", "--console-address", ":9001"]
