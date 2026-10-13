@@ -13,8 +13,9 @@ Branch `osl/RELEASE.2025-10-15T17-29-55Z` = upstream's **final** release tag plu
 
 ## Build
 ```bash
-osl/build.sh           # cross-compiles linux/amd64 AND linux/arm64 in golang:1.24.8-alpine, packages osl/Dockerfile
-osl/build.sh --push    # pushes ghcr.io/opensystemslab/minio:v<osl/VERSION> as one multi-arch tag
+osl/build.sh           # cross-compiles linux/arm64 (the org standard) in golang:1.24.8-alpine, packages osl/Dockerfile
+osl/build.sh --push    # pushes ghcr.io/opensystemslab/minio:v<osl/VERSION>
+OSL_ARCHES="amd64 arm64" osl/build.sh --push   # also amd64, only while an amd64 box needs it
 ```
 The upstream release comes from `osl/UPSTREAM` (not `git describe`, which in a fresh clone
 finds an older `RELEASE.*` tag). Same flags as upstream's Makefile (`CGO_ENABLED=0 -tags kqueue -trimpath`, ldflags from

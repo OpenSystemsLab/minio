@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 # Build ghcr.io/opensystemslab/minio from this checkout (see osl/README.md).
-#   osl/build.sh            build both architectures; load this machine's one locally to test
-#   osl/build.sh --push     build both architectures and push one multi-arch tag
-#   OSL_ARCHES="amd64"      override the architecture list (default: amd64 arm64)
+#   osl/build.sh            build linux/arm64; load it locally to test
+#   osl/build.sh --push     build and push
+#   OSL_ARCHES="amd64 arm64" also build amd64 (default: arm64 only)
+# ARM64 is the org's image standard (2026-10-13). Production (open-webui-gitops box 2) is
+# amd64 until the Graviton cutover and pins v1.0.0 (amd64); build amd64 too only if an
+# amd64 box needs a new version before then.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 # The upstream release this branch is built from. Read from osl/UPSTREAM, NOT `git describe`:
@@ -16,7 +19,7 @@ GOIMG=golang:1.24.8-alpine                               # go.mod: toolchain go1
 # osl/VERSION is OUR version; bump it per rebuild. The upstream release is in
 # the image labels, not the tag.
 IMAGE=ghcr.io/opensystemslab/minio:v$(cat osl/VERSION)
-ARCHES="${OSL_ARCHES:-amd64 arm64}"
+ARCHES="${OSL_ARCHES:-arm64}"
 
 # Cross-compile natively for every architecture (no emulation: Go cross-compiles with
 # CGO off). Same tags/flags as upstream's Makefile. One binary per architecture,
